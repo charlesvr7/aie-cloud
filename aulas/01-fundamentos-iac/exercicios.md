@@ -144,8 +144,10 @@ Observalidade  - logs, Monitoramento , relatorios , alertas, performance.
 IA Conversacional - LLM, RAG, embeddings, recomendação e atendimento.
 Security / Identidade -  VPN, Firewall , IAM, RBAC , Políticas de Acesso. 
 
-2. **Provedor principal** — qual escolheria (Azure, AWS, GCP) e por quê
-AWS , a Quantum Commerce precisa de uma arquitetura corporativa e escalavel , a AWS como lider mercado atende todas as necessidades em ambito global com excelentes ferramentas e com amplo catalogo de serviços como lider de mercado.
+2. **Provedor principal** 
+
+O provedor principal escolhido foi a AWS. Porque é uma plataforma com ampla presença global, alta maturidade em serviços cloud, grande catálogo de soluções gerenciadas e forte capacidade de escalar workloads de e-commerce em múltiplas regiões. Para a Quantum Commerce, que atua em 12 países e possui 5 milhões de SKUs, a AWS permite combinar serviços de compute, storage, bancos de dados, CDN, mensageria, observabilidade e IA generativa com alta disponibilidade e controle de custo. 
+
 
 3. **Serviços por categoria** — preencha a tabela:
 
@@ -162,7 +164,7 @@ AWS , a Quantum Commerce precisa de uma arquitetura corporativa e escalavel , a 
 | Observabilidade (logs/métricas) | Azure Monitor / Application Insights | CloudWatch / X-Ray | Cloud Monitoring / Trace |
 
 4. **Diagrama** — feito no Excalidraw (excalidraw.com), draw.io (diagrams.net) ou à mão fotografado. **Tudo sem instalação.**
-
+Em anexo
 > **Entrega:** O grupo commita o esboço (`respostas-aula01.md` + imagem do diagrama) no fork até 1 dia antes da Aula 2. O professor dá feedback escrito durante a semana. O diagrama evolui a cada aula até a entrega final na Aula 6.
 
 ---
@@ -176,19 +178,29 @@ Você precisa recomendar infraestrutura para um projeto de AI Engineering. Use a
 - 1 banco gerenciado com 2 vCPUs / 8 GB RAM / 100 GB
 - 10 milhões de requisições/mês para função serverless
 
-| Item | Azure | AWS | GCP | Notas |
-|------|-------|-----|-----|-------|
-| 2 × VM (2vCPU/8GB) | | | | Tipo: |
-| 500 GB storage | | | | Tipo: |
-| Banco gerenciado | | | | Tipo: |
-| 10M req serverless | | | | Tipo: |
-| **Total mensal** | | | | |
-| **Total anual** | | | | |
+| Item               | Azure     | AWS        | GCP         | Notas |
+|--------------------|-----------|------------|-------------|-------|
+| 2 × VM (2vCPU/8GB) |  U$147,46 | $140,16    | $141,78     | Tipo: |
+| 500 GB storage     |  U$9,00   | $11,50     | $10,00      | Tipo: |
+| Banco gerenciado   |  U$266,68 | $129,94    | $101,17     | Tipo: |
+| 10M req serverless |  U$1,80   | $1,80      | $3,20       | Tipo: |
+| **Total mensal**   |  U$425,94 | $283,40    | $256,15     |       |
+| **Total anual**    |  U$5111,28| $3.400,80  | $3.073,80   |       |
 
 **Análise:**
 
 a) Qual provedor ficou mais barato? A diferença é significativa?
+
+GCP foi o mais barato, seguido de AWS, com Azure em último lugar. 
+A diferença entre GCP e AWS é pequena 10%, praticamente empate técnico considerando variações regionais. Ambos são escolhas viáveis. Azure 66% mais caro que GCP no pay-as-you-go.
 b) Aplicando Reserved Instances de 1 ano no mais caro, o resultado muda?
+Sim. 
+| Provedor | Mensal (reservado 1 ano) | Anual      |
+| -------- | ------------------------ | ---------- |
+| GCP      | U$178,00 (CUD 1 ano)     | U$2.136,00 |
+| AWS      | U$185,00 (RI 1 ano)      | U$2.220,00 |
+| Azure    | U$267,55                 | U$3.210,60 |
+
 c) Além de preço, que outros fatores você consideraria para um projeto de IA?
 
 **Calculadoras:**
@@ -204,9 +216,55 @@ c) Além de preço, que outros fatores você consideraria para um projeto de IA?
 Pense no seu contexto profissional atual (ou empresa que conhece bem).
 
 a) Descreva um sistema/workload (sem dados confidenciais — pode ser genérico)
+A empresa possui um sistema web interno utilizado para gestão de clientes, pedidos e acompanhamento operacional.
+
+Atualmente o sistema está hospedado em servidores locais, utilizando máquinas virtuais Windows Server, banco de dados SQL Server e armazenamento local para documentos e relatórios.
+
+O sistema é utilizado diariamente pelos colaboradores e possui crescimento constante no volume de dados e acessos.
+
+
 b) Qual dos 6 Rs você aplicaria? Justifique custo, risco, ganho, prazo
+A estratégia escolhida seria Replatform. O sistema continuaria utilizando a mesma aplicação principal e o mesmo banco de dados, porém alguns componentes seriam migrados para serviços gerenciados na nuvem.
+O objetivo é reduzir a complexidade operacional, melhorar a disponibilidade e permitir escalabilidade sem a necessidade de uma reescrita completa da aplicação.
+
+Custo:
+Moderado, pois não exige reescrita completa da aplicação.
+
+Risco:
+Baixo a médio, pois a lógica de negócio permanece inalterada.
+
+Ganho:
+Maior disponibilidade, backups gerenciados, monitoramento centralizado e escalabilidade.
+
+Prazo:
+Curto a médio prazo, permitindo migração gradual.
+
+
 c) Que serviço Azure usaria? Estimativa mensal?
+
+Os principais serviços utilizados seriam:
+
+- Azure App Service para hospedagem da aplicação.
+- Azure SQL Database para o banco de dados relacional.
+- Azure Blob Storage para armazenamento de documentos.
+- Azure Monitor para observabilidade.
+- Microsoft Entra ID para autenticação e controle de acesso.
+
+Estimativa aproximada:
+
+- Azure App Service: US$ 70/mês
+- Azure SQL Database: US$ 120/mês
+- Azure Blob Storage: US$ 10/mês
+- Azure Monitor: US$ 15/mês
+
+Total estimado:
+US$ 215/mês
+
 d) Maior obstáculo técnico ou organizacional? Como endereçaria?
+
+O principal obstáculo seria a resistência à mudança e o planejamento da migração sem interrupção dos serviços.
+A adoção da nuvem normalmente exige adequação de processos, treinamento da equipe e revisão de procedimentos operacionais.
+Para minimizar os riscos, seria realizada uma migração gradual, iniciando por ambientes de homologação e testes, seguida de validações de desempenho e segurança antes da entrada em produção.
 
 ---
 
