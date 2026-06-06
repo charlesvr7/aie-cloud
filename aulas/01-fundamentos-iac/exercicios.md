@@ -97,9 +97,12 @@ Leia cada cenário e escolha o R de migração mais adequado (Rehost, Replatform
 
 Sistema de e-commerce com SLA de 99,9%.
 
-a) Quantas horas de downtime por ano?
+a) Quantas horas de downtime por ano?  
+  8,76 horas.
 b) Se processa R$ 50.000/hora em vendas, qual o impacto financeiro máximo por ano?
-c) Para reduzir o impacto para menos de R$ 50.000/ano, qual SLA mínimo seria necessário?
+   R$438000,00 ano
+) Para reduzir o impacto para menos de R$ 50.000/ano, qual SLA mínimo seria necessário?
+Sem dúvida a SLA 99,999%
 
 > **Fórmulas úteis:**
 > Downtime anual (horas) = 8.760 × (1 - SLA/100)
@@ -111,29 +114,15 @@ c) Para reduzir o impacto para menos de R$ 50.000/ano, qual SLA mínimo seria ne
 
 Você é o responsável de segurança da Quantum Commerce. Para cada perfil abaixo, escolha a role built-in do Azure mais adequada e justifique:
 
-| Perfil | Role Azure mais adequada | Justificativa |
-|--------|--------------------------|---------------|
-| Agente de IA que LÊ produtos do Storage para responder ao cliente | | |
-| Engenheiro de dados que CARREGA novos catálogos no Blob | | |
-| Time de FinOps que precisa VER custos sem alterar recursos | | |
-| Auditor externo que precisa LER configurações de toda a assinatura | | |
-| Sistema de CI/CD que provisiona infraestrutura via Terraform | | |
+| Perfil -----------------------------------------------------------| Role Azure mais adequada | Justificativa |
+|-------------------------------------------------------------------|--------------------------|---------------|
+| Agente de IA que LÊ produtos do Storage para responder ao cliente | Reader                   | Necessário somente Leitura |
+| Engenheiro de dados que CARREGA novos catálogos no Blob           | Contributor              | Mecessario leitura e escrita para salver arquivos no Blob|
+| Time de FinOps que precisa VER custos sem alterar recursos        | Reader                   | Somente Visualização nao tem necessidade de escrita|
+| Auditor externo que precisa LER configurações de toda a assinatura | Reader                  | Precisa somente Leitura para autidar|
+| Sistema de CI/CD que provisiona infraestrutura via Terraform       |  Contributor            | Não tem necessidade de tudo, inclusive dar permissões aos outros ate dos HTL, utilizar permissão via Grupo de Recursos para melhor canalizar as permissões|
 
 **Referência:** [Azure Built-in Roles](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles)
-
-<details>
-<summary>Sugestões de gabarito (existem múltiplas respostas válidas)</summary>
-
-- Agente que lê produtos: **Storage Blob Data Reader** (acesso só de leitura no plano de dados)
-- Engenheiro de dados que carrega: **Storage Blob Data Contributor**
-- FinOps: **Cost Management Reader** ou **Billing Reader**
-- Auditor externo: **Reader** na assinatura
-- CI/CD provisionando IaC: **Contributor** no Resource Group específico (não na assinatura) + Service Principal dedicado
-
-**Princípio:** O menor privilégio possível para a tarefa. Nunca dar Owner ou Contributor da assinatura quando uma role escoped basta.
-
-</details>
-
 ---
 
 ## 🟡 Nível 2 — Intermediário: Análise e Estratégia
@@ -145,20 +134,32 @@ Você é o responsável de segurança da Quantum Commerce. Para cada perfil abai
 **Sua tarefa (em grupo):** Proponha uma arquitetura de alto nível em cloud para a QC. Identifique:
 
 1. **Camadas da arquitetura** — quantas e o que cada uma faz (ex: frontend, API, dados, AI/ML, observabilidade)
+
+Backend /API Gateway    -   Exposição de APIs, orquestração de serviços, regras de negócio, códigos.
+FrontEnd   -   Sistema Web, mobile app e interfaces de atendimento "CRM".
+Dados Transicionais - Pedidos, clientes, produtos, estoque e pagamento;
+Dados Analiticos    - Data Lake, BI, Eventos , comportamento, Ciencia de dados. 
+Rede CDN / Edge- Distribuição Global , redundancia, cache e baixa latência.
+Observalidade  - logs, Monitoramento , relatorios , alertas, performance.
+IA Conversacional - LLM, RAG, embeddings, recomendação e atendimento.
+Security / Identidade -  VPN, Firewall , IAM, RBAC , Políticas de Acesso. 
+
 2. **Provedor principal** — qual escolheria (Azure, AWS, GCP) e por quê
+AWS , a Quantum Commerce precisa de uma arquitetura corporativa e escalavel , a AWS como lider mercado atende todas as necessidades em ambito global com excelentes ferramentas e com amplo catalogo de serviços como lider de mercado.
+
 3. **Serviços por categoria** — preencha a tabela:
 
-| Categoria | Serviço Azure | Alternativa AWS | Alternativa GCP |
-|-----------|--------------|-----------------|-----------------|
-| Compute (backend) | | | |
-| Storage (catálogo, imagens) | | | |
-| Banco relacional | | | |
-| Banco NoSQL | | | |
-| Vector Database | | | |
-| Serviços de IA cognitivos | | | |
-| CDN | | | |
-| Mensageria/Filas | | | |
-| Observabilidade (logs/métricas) | | | |
+| Categoria                       | Serviço Azure | Alternativa AWS | Alternativa GCP |
+|---------------------------------|------------------------|-------------------------|-----------------|
+| Compute (backend)               |Azure App Service       | Elastic Beanstalk       | Cloud Run       |
+| Storage (catálogo, imagens)     | Azure Blob Storage     | Amazon S3               | Cloud Storage   |
+| Banco relacional                | Azure SQL Database     | Amazon RDS / Aurora     | Cloud SQL       |
+| Banco NoSQL                     | Azure Cosmos DB        | DynamoDB                | Firestore       |
+| Vector Database                 | Azure Cosmos DB for MongoDB |Amazon OpenSearch Serverless  | AlloyDB + pgvector |
+| Serviços de IA cognitivos       | Azure OpenAI Service   | Amazon Bedrock          | Vertex AI              |
+| CDN                             | Azure Front Door       | CloudFront + AWS WAF    | Cloud CDN + Cloud Armor |
+| Mensageria/Filas                | Azure Event Hubs / Service Bus | SNS/SQS/EventBridge/Kinesis | Pub/Sub     |
+| Observabilidade (logs/métricas) | Azure Monitor / Application Insights | CloudWatch / X-Ray | Cloud Monitoring / Trace |
 
 4. **Diagrama** — feito no Excalidraw (excalidraw.com), draw.io (diagrams.net) ou à mão fotografado. **Tudo sem instalação.**
 
@@ -336,3 +337,5 @@ A entrega é **um ZIP por grupo** (`entrega-grupo-NN-aula01.zip`) no Portal FIAP
 **c)** Máx downtime = 50.000 ÷ 50.000 = 1h/ano → 1 ÷ 8.760 = 0,0114% → SLA mínimo **99,9886%** → na prática **SLA 99,99%** (52 min/ano)
 
 </details>
+
+
